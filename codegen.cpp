@@ -1,9 +1,5 @@
-#include <fstream>
 #include <iostream>
-#include <sstream>
 
-#include "rapidjson/rapidjson.h"
-#include "rapidjson/document.h"
 #include "generator.h"
 
 int main(int argc, char *argv[])
@@ -40,4 +36,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
