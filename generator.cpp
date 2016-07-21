@@ -135,69 +135,7 @@ const char * json_base_code =
 
         )";
 
-} // namespace
-
-
-namespace serialization
-{
-
-bool generator::gen_json_code(const std::string & file, const std::string & name)
-{
-    std::string data;
-    if(!read_file(file, data))
-    {
-        std::cout << "read file error: " << file << std::endl;
-        return false;
-    }
-
-    detail::tree t;
-    try
-    {
-        parser p(t);
-        p.parse(data);
-        if(name.empty())
-            gen_json_code(t, file);
-        else
-            gen_json_code(t, name);
-    }
-    catch(const detail::parse_error& err)
-    {
-        std::cout << file << ">> " << err.where() << ":" << err.what() << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-bool generator::gen_xml_code(const std::string & file, const std::string & name)
-{
-    std::string data;
-    if(!read_file(file, data))
-    {
-        std::cout << "read file error: " << file << std::endl;
-        return false;
-    }
-
-    detail::tree t;
-    try
-    {
-        parser p(t);
-        p.parse(data);
-        if(name.empty())
-            gen_xml_code(t, file);
-        else
-            gen_xml_code(t, name);
-    }
-    catch(const detail::parse_error& err)
-    {
-        std::cout << file << ">> " << err.where() << ":" << err.what() << std::endl;
-        return false;
-    }
-
-    return true;
-}
-
-bool generator::read_file(const std::string & filename, std::string & data)
+bool read_file(const std::string & filename, std::string & data)
 {
     std::ifstream ifs(filename);
     if(!ifs)
@@ -217,7 +155,7 @@ bool generator::read_file(const std::string & filename, std::string & data)
     return true;
 }
 
-void generator::gen_json_code(detail::tree & t, const std::string & name)
+void gen_json_code_impl(serialization::detail::tree & t, const std::string & name)
 {
     std::ofstream h(name + ".h");
     std::ofstream cpp(name + ".cpp");
@@ -251,7 +189,7 @@ void generator::gen_json_code(detail::tree & t, const std::string & name)
     if(!t.type.empty())
         h << "namespace " << t.type << "\n{\n";
 
-    for(detail::entry * e : t.entries)
+    for(serialization::detail::entry * e : t.entries)
     {
         h << "// " << e->desc << "\n";
         h << "struct " << e->type << "\n{\n";
@@ -274,10 +212,10 @@ void generator::gen_json_code(detail::tree & t, const std::string & name)
                                                                                                  "if(!val.IsObject())\n"
                                                                                                  "return false;\n\n";
 
-        for(detail::item * i : e->items)
+        for(serialization::detail::item * i : e->items)
         {
             h << "// " << i->desc << "\n";
-            if(i->item_type == detail::Sequence)
+            if(i->item_type == serialization::detail::Sequence)
                 h << "std::list< " << i->type << " >    " << i->name << ";\n\n";
             else
                 h << i->type << "    " << i->name << ";\n\n";
@@ -312,7 +250,8 @@ void generator::gen_json_code(detail::tree & t, const std::string & name)
     cpp << os2.rdbuf();
     cpp << os3.rdbuf();
 }
-void generator::gen_xml_code(detail::tree & t, const std::string & name)
+
+void gen_xml_code_impl(serialization::detail::tree & t, const std::string & name)
 {
     std::ofstream h(name + ".h");
     std::ofstream cpp(name + ".cpp");
@@ -344,7 +283,7 @@ void generator::gen_xml_code(detail::tree & t, const std::string & name)
     if(!t.type.empty())
         h << "namespace " << t.type << "\n{\n";
 
-    for(detail::entry * e : t.entries)
+    for(serialization::detail::entry * e : t.entries)
     {
         h << "// " << e->desc << "\n";
         h << "struct " << e->type << "\n{\n";
@@ -367,10 +306,10 @@ void generator::gen_xml_code(detail::tree & t, const std::string & name)
                "return false;"
                "node = node->first_node();\n\n";
 
-        for(detail::item * i : e->items)
+        for(serialization::detail::item * i : e->items)
         {
             h << "// " << i->desc << "\n";
-            if(i->item_type == detail::Sequence)
+            if(i->item_type == serialization::detail::Sequence)
                 h << "std::list< " << i->type << " >    " << i->name << ";\n\n";
             else
                 h << i->type << "    " << i->name << ";\n\n";
@@ -408,5 +347,67 @@ void generator::gen_xml_code(detail::tree & t, const std::string & name)
     cpp << os2.rdbuf();
     cpp << os3.rdbuf();
 }
+
+} // namespace
+
+namespace serialization
+{
+
+bool generator::gen_json_code(const std::string & file, const std::string & name)
+{
+    std::string data;
+    if(!read_file(file, data))
+    {
+        std::cout << "read file error: " << file << std::endl;
+        return false;
+    }
+
+    detail::tree t;
+    try
+    {
+        parser p(t);
+        p.parse(data);
+        if(name.empty())
+            gen_json_code_impl(t, file);
+        else
+            gen_json_code_impl(t, name);
+    }
+    catch(const detail::parse_error& err)
+    {
+        std::cout << file << ">> " << err.where() << ":" << err.what() << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool generator::gen_xml_code(const std::string & file, const std::string & name)
+{
+    std::string data;
+    if(!read_file(file, data))
+    {
+        std::cout << "read file error: " << file << std::endl;
+        return false;
+    }
+
+    detail::tree t;
+    try
+    {
+        parser p(t);
+        p.parse(data);
+        if(name.empty())
+            gen_xml_code_impl(t, file);
+        else
+            gen_xml_code_impl(t, name);
+    }
+    catch(const detail::parse_error& err)
+    {
+        std::cout << file << ">> " << err.where() << ":" << err.what() << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 
 } // namespace serialization

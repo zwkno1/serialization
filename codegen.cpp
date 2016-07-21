@@ -1,10 +1,10 @@
 #include <iostream>
+#include <cstring>
 
 #include "generator.h"
 
 int main(int argc, char *argv[])
 {
-    rapidjson::Value v;
     serialization::generator g;
 
     if(argc < 3)
