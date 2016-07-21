@@ -11,6 +11,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 SET(SRC_LIST
 	codegen.cpp
+	generator.cpp
 	)
 
 add_executable(codegen

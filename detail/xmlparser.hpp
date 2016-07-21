@@ -1,19 +1,18 @@
 
-#include "objects.hpp"
+#include "objects.h"
 
 namespace serialization
 {
 
-template<typename ObjectFactory>
+namespace detail
+{
+
 class xml_parser
 {
 public:
-    typedef detail::item * item_type;
-    typedef detail::entry * entry_type;
-    typedef typename ObjectFactory::root_type root_type;
     
-    xml_parser(ObjectFactory & factory)
-        : factory_(factory)
+    xml_parser(tree & t)
+        : tree_(t)
     {
     }
 
@@ -36,13 +35,11 @@ public:
             SERIALIZATION_PARSE_ERROR(err.what(), err.where<char>());
         }
 
-        auto root = doc.first_node();
-        
-        factory_.root = parse_root(root);
+        parse_root(doc.first_node());
     }
     
 private:
-    root_type parse_root(rapidxml::xml_node<> * node)
+    void parse_root(rapidxml::xml_node<> * node)
     {
         if(!node || std::strcmp(node->name(), "root"))
             SERIALIZATION_PARSE_ERROR("expect root", "");
@@ -55,17 +52,17 @@ private:
         if(!desc)
             SERIALIZATION_PARSE_ERROR("expect desc", node->name());
         
-        root_type root = factory_.make_root(type->value(), desc->value());
+        tree_.type = type->value();
+        tree_.desc = desc->value();
               
         for(auto n = node->first_node(); n; n = n->next_sibling())
         {
-            entry_type e = parse_entry(n, type->value());
-            root->append(e);
+            entry * e = parse_entry(n);
+            tree_.entries.push_back(e);
         }
-        return root;
     }
     
-    entry_type parse_entry(rapidxml::xml_node<> *node, const std::string & ns)
+    entry * parse_entry(rapidxml::xml_node<> *node)
     {
         if(std::strcmp(node->name(), "entry"))
             SERIALIZATION_PARSE_ERROR("expect entry", node->name());
@@ -76,40 +73,42 @@ private:
         if(*type == '\0')
             SERIALIZATION_PARSE_ERROR("expect entry name", node->name());
 
-        entry_type entry = factory_.make_entry(ns, type, desc, id);
+        entry * e = tree_.make_entry(type, desc, id);
 
         for(auto n = node->first_node(); n; n = n->next_sibling())
         {
-            item_type i = parse_item(n);
-            entry->append(i);
+            item * i = parse_item(n);
+            e->items.push_back(i);
         }
 
-        return entry;
+        return e;
     }
 
-    item_type parse_item(rapidxml::xml_node<> *node)
+    item * parse_item(rapidxml::xml_node<> *node)
     {
         const char * obj_type = node->name();
         const char * type = parse_attribute(node, "type");
         const char * name = parse_attribute(node, "name");
         const char * desc = parse_attribute(node, "desc");
 
+        ItemType item_type;
         if(!std::strcmp(obj_type, "base"))
         {
-            return factory_.make_base(type, name, desc);
+            item_type = Base;
         }
         else if(!std::strcmp(obj_type, "sequence"))
         {
-            return factory_.make_sequence(type, name, desc);
+            item_type = Sequence;
         }
         else if(!std::strcmp(obj_type, "structure"))
         {
-            return factory_.make_structure(type, name, desc);
+            item_type = Structure;
         }
         else
         {
             SERIALIZATION_PARSE_ERROR("expect item(base or sequence or struct)", type);
         }
+        return tree_.make_item(item_type, type, name, desc);
     }
 
     const char * parse_attribute(rapidxml::xml_node<> * node, const char * name)
@@ -120,7 +119,9 @@ private:
         return "";
     }
 private:
-    ObjectFactory & factory_;
+    tree & tree_;
 };
+
+} //namespace detail
 
 } //namespace serialization
