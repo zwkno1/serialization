@@ -12,6 +12,9 @@ using parser = serialization::xml_parser<T>;
 #ifdef XML_CPP_GENERATOR
 #include "detail/xmlcppgenerator.hpp"
 typedef serialization::xml_cpp_generator<parser> generator;
+#elif defined JSON_CPP_GENERATOR
+#include "detail/jsoncppgenerator.hpp"
+typedef serialization::json_cpp_generator<parser> generator;
 #else
 #error "no generator"
 #endif

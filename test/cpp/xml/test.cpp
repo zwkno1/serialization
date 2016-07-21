@@ -1,5 +1,5 @@
 
-#include "test.xml.h"
+#include "test.h"
 #include <cstring>
 #include <sstream>
 
@@ -21,100 +21,92 @@ template<>bool unserialize(const rapidxml::xml_node<> * node, std::string & out)
     return true;
 }
 
-//for vector
-template<class T>
-bool serialize(rapidxml::xml_node<> * & node, const T & in, rapidxml::xml_document<> & doc)
-{
-    std::stringstream ss;
-    ss << in;
-    node = doc.allocate_node(rapidxml::node_element, "element", doc.allocate_string(ss.str().c_str()));
-    return true;
-}
-
 // for base item
 // char or uchar is treated as interger
 template<class T>
-std::string get_string(const T & in)
+bool serialize(rapidxml::xml_node<> * node, const T & in, rapidxml::xml_document<> & doc)
 {
     std::stringstream ss;
     ss << in;
-    return ss.str();
+    node->value(doc.allocate_string(ss.str().c_str()));
+    return true;
 }
 
 } // namespace 
 
 using namespace test;
 
-bool serialize(rapidxml::xml_node<> * & node, const ReqDeviceInfo & in, rapidxml::xml_document<> & doc)
+bool serialize(rapidxml::xml_node<> * node, const ReqDeviceInfo & in, rapidxml::xml_document<> & doc)
 {
-node = doc.allocate_node(rapidxml::node_element, doc.allocate_string("ReqDeviceInfo"));
 {
-auto node1 = doc.allocate_node(rapidxml::node_element, "userId", doc.allocate_string(get_string(in.userId).c_str()));
+auto node1 = doc.allocate_node(rapidxml::node_element, "userId");
 node->append_node(node1);
+if(!serialize(node1, in.userId, doc))
+return false;
 }
 {
-auto node1 = doc.allocate_node(rapidxml::node_element, "deviceId", doc.allocate_string(get_string(in.deviceId).c_str()));
+auto node1 = doc.allocate_node(rapidxml::node_element, "deviceId");
 node->append_node(node1);
+if(!serialize(node1, in.deviceId, doc))
+return false;
 }
 return true;
 }
 
-bool serialize(rapidxml::xml_node<> * & node, const RetDeviceInfo & in, rapidxml::xml_document<> & doc)
+bool serialize(rapidxml::xml_node<> * node, const RetDeviceInfo & in, rapidxml::xml_document<> & doc)
 {
-node = doc.allocate_node(rapidxml::node_element, doc.allocate_string("RetDeviceInfo"));
 {
-auto node1 = doc.allocate_node(rapidxml::node_element, "userId", doc.allocate_string(get_string(in.userId).c_str()));
+auto node1 = doc.allocate_node(rapidxml::node_element, "userId");
 node->append_node(node1);
+if(!serialize(node1, in.userId, doc))
+return false;
 }
 {
-auto node1 = doc.allocate_node(rapidxml::node_element, "deviceId", doc.allocate_string(get_string(in.deviceId).c_str()));
+auto node1 = doc.allocate_node(rapidxml::node_element, "deviceId");
 node->append_node(node1);
+if(!serialize(node1, in.deviceId, doc))
+return false;
 }
 {
-auto node1 = doc.allocate_node(rapidxml::node_element, doc.allocate_string("deviceInfos"));
+auto node1 = doc.allocate_node(rapidxml::node_element, "deviceInfos");
 node->append_node(node1);
-auto node2 = doc.allocate_node(rapidxml::node_element, doc.allocate_string("Vector"));
-node1->append_node(node2);
 for(auto i = in.deviceInfos.begin(); i != in.deviceInfos.end(); ++i)
 {
-rapidxml::xml_node<> * tmp = 0;
-if(!serialize(tmp, *i, doc))
+auto node2 = doc.allocate_node(rapidxml::node_element, "item");
+node1->append_node(node2);
+if(!serialize(node2, *i, doc))
 return false;
-node2->append_node(tmp);
 }
 }
 {
-auto node1 = doc.allocate_node(rapidxml::node_element, doc.allocate_string("deviceInfos2"));
+auto node1 = doc.allocate_node(rapidxml::node_element, "deviceInfos2");
 node->append_node(node1);
-auto node2 = doc.allocate_node(rapidxml::node_element, doc.allocate_string("Vector"));
-node1->append_node(node2);
 for(auto i = in.deviceInfos2.begin(); i != in.deviceInfos2.end(); ++i)
 {
-rapidxml::xml_node<> * tmp = 0;
-if(!serialize(tmp, *i, doc))
+auto node2 = doc.allocate_node(rapidxml::node_element, "item");
+node1->append_node(node2);
+if(!serialize(node2, *i, doc))
 return false;
-node2->append_node(tmp);
 }
 }
 {
 auto node1 = doc.allocate_node(rapidxml::node_element, "deviceInfo");
 node->append_node(node1);
 rapidxml::xml_node<> * node2 = 0;
-if(!serialize(node2, in.deviceInfo, doc))
+if(!serialize(node1, in.deviceInfo, doc))
 return false;
-node1->append_node(node2);
 }
 {
-auto node1 = doc.allocate_node(rapidxml::node_element, "time", doc.allocate_string(get_string(in.time).c_str()));
+auto node1 = doc.allocate_node(rapidxml::node_element, "time");
 node->append_node(node1);
+if(!serialize(node1, in.time, doc))
+return false;
 }
 return true;
 }
 
 bool unserialize(const rapidxml::xml_node<> * node, ReqDeviceInfo & out)
 {
-if(!node || std::strcmp(node->name(), "ReqDeviceInfo")) 
-return false;
 node = node->first_node();
 
 if(!node || std::strcmp(node->name(), "userId"))
@@ -134,8 +126,6 @@ return true;
 
 bool unserialize(const rapidxml::xml_node<> * node, RetDeviceInfo & out)
 {
-if(!node || std::strcmp(node->name(), "RetDeviceInfo")) 
-return false;
 node = node->first_node();
 
 if(!node || std::strcmp(node->name(), "userId"))
@@ -153,11 +143,10 @@ node = node->next_sibling();
 if(!node || std::strcmp(node->name(), "deviceInfos"))
 return false;
 {
-auto tmp = node->first_node();
-if(!tmp || std::strcmp(tmp->name(), "Vector"))
-return false;
-for(auto i = tmp->first_node(); i; i = i->next_sibling())
+for(auto i = node->first_node(); i; i = i->next_sibling())
 {
+if(std::strcmp(i->name(), "item"))
+return false;
 std::list< ReqDeviceInfo >::value_type tmp;
 if(!unserialize(i, tmp))
 return false;
@@ -168,11 +157,10 @@ node = node->next_sibling();
 if(!node || std::strcmp(node->name(), "deviceInfos2"))
 return false;
 {
-auto tmp = node->first_node();
-if(!tmp || std::strcmp(tmp->name(), "Vector"))
-return false;
-for(auto i = tmp->first_node(); i; i = i->next_sibling())
+for(auto i = node->first_node(); i; i = i->next_sibling())
 {
+if(std::strcmp(i->name(), "item"))
+return false;
 std::list< int >::value_type tmp;
 if(!unserialize(i, tmp))
 return false;
@@ -183,8 +171,7 @@ node = node->next_sibling();
 if(!node || std::strcmp(node->name(), "deviceInfo"))
 return false;
 {
-auto tmp = node->first_node();
-if(!unserialize(tmp, out.deviceInfo))
+if(!unserialize(node, out.deviceInfo))
 return false;
 }
 node = node->next_sibling();

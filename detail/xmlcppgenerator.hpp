@@ -46,8 +46,10 @@ public:
         SERIALIZATION_TRACE(os, name_, type_);
 
         os << "{\n"
-              "auto node1 = doc.allocate_node(rapidxml::node_element, \"" << name_ << "\", doc.allocate_string(get_string(in." << name_ << ").c_str()));\n"
+              "auto node1 = doc.allocate_node(rapidxml::node_element, \"" << name_ << "\");\n"
               "node->append_node(node1);\n"
+              "if(!serialize(node1, in." << name_ << ", doc))\n"
+              "return false;\n"
               "}\n";
     }
 };
@@ -82,7 +84,7 @@ public:
               "for(auto i = node->first_node(); i; i = i->next_sibling())\n"
               "{\n"
               "if(std::strcmp(i->name(), \"item\"))\n"
-              "return false;"
+              "return false;\n"
            << impl_type_ << "::value_type tmp;\n"
               "if(!unserialize(i, tmp))\n"
               "return false;\n"
@@ -97,16 +99,14 @@ public:
         SERIALIZATION_TRACE(os, name_, type_);
 
         os << "{\n"
-              "auto node1 = doc.allocate_node(rapidxml::node_element, doc.allocate_string(\"" << name_ << "\"));\n"
+              "auto node1 = doc.allocate_node(rapidxml::node_element, \"" << name_ << "\");\n"
               "node->append_node(node1);\n"
               "for(auto i = in." << name_ << ".begin(); i != in." << name_ << ".end(); ++i)\n"
               "{\n"
-              "auto node2 = doc.allocate_node(rapidxml::node_element, doc.allocate_string(\"item\"));\n"
+              "auto node2 = doc.allocate_node(rapidxml::node_element, \"item\");\n"
               "node1->append_node(node2);\n"
-           << xml_node_type_str << " tmp = 0;\n"
-              "if(!serialize(tmp, *i, doc))\n"
+              "if(!serialize(node2, *i, doc))\n"
               "return false;\n"
-              "node2->append_node(tmp);\n"
               "}\n"
               "}\n";
     }
@@ -137,8 +137,7 @@ public:
         os << "if(!node || std::strcmp(node->name(), \"" << name_ << "\"))\n"
               "return false;\n"
               "{\n"
-              "auto tmp = node->first_node();\n"
-              "if(!unserialize(tmp, out." << name_ << "))\n"
+              "if(!unserialize(node, out." << name_ << "))\n"
               "return false;\n"
               "}\n"
               "node = node->next_sibling();\n";
@@ -152,9 +151,8 @@ public:
               "auto node1 = doc.allocate_node(rapidxml::node_element, \"" << name_ << "\");\n"
               "node->append_node(node1);\n"
            << xml_node_type_str << " node2 = 0;\n"
-              "if(!serialize(node2, in." << name_ << ", doc))\n"
+              "if(!serialize(node1, in." << name_ << ", doc))\n"
               "return false;\n"
-              "node1->append_node(node2);\n"
               "}\n";
     }
 };
@@ -176,7 +174,7 @@ public:
 
         if(!id_.empty())
         {
-            os << "enum { id = " << id_ << " };\n\n";
+            os << "enum { ID = " << id_ << " };\n\n";
         }
 
         for(auto i : items_)
@@ -215,7 +213,7 @@ public:
         SERIALIZATION_TRACE(os, type_, objectType());
 
         os << "bool serialize(" << xml_node_type_str << " node, const " << type_ << " & in, " << xml_document_type_str << " & doc)\n"
-              "{\n"
+              "{\n";
         for(auto i : items_)
         {
             i->genSerialize(os);
@@ -300,29 +298,18 @@ public:
               "    return true;\n"
               "}\n"
               "\n"
-              "//for vector\n"
-              "template<class T>\n"
-              "bool serialize(" << xml_node_type_str << " & node, const T & in, " << xml_document_type_str << " & doc)\n"
-              "{\n"
-              "    std::stringstream ss;\n"
-              "    ss << in;\n"
-              "    node = doc.allocate_node(rapidxml::node_element, \"element\", doc.allocate_string(ss.str().c_str()));\n"
-              "    return true;\n"
-              "}\n"
-              "\n"
               "// for base item\n"
               "// char or uchar is treated as interger\n"
               "template<class T>\n"
-              "std::string get_string(const T & in)\n"
+              "bool serialize(" << xml_node_type_str << " node, const T & in, " << xml_document_type_str << " & doc)\n"
               "{\n"
               "    std::stringstream ss;\n"
               "    ss << in;\n"
-              "    return ss.str();\n"
+              "    node->value(doc.allocate_string(ss.str().c_str()));\n"
+              "    return true;\n"
               "}\n"
               "\n"
               "} // namespace \n\n";
-
-        os << "using namespace " << type_ << ";\n\n";
     }
 };
 
@@ -408,7 +395,7 @@ public:
         head << "#include <list>\n";
         head << "#include <string>\n";
         head << "\n";
-        head << "#include <rapidxml.hpp>\n";
+        head << "#include <rapidxml/rapidxml.hpp>\n";
         head << "\n\n";
         factory.root->genDefinition(head);
 

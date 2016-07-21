@@ -3,45 +3,39 @@
  *
  */
 
-#include "test.xml.h"
+#include "test.h"
 
 #include <iostream>
 #include <sstream>
-#include <rapidxml.hpp>
-#include <rapidxml_print.hpp>
+#include <rapidxml/rapidxml.hpp>
+#include <rapidxml/rapidxml_print.hpp>
 
 int main(int argc, char *argv[])
 {
-    std::string xml = "<RetDeviceInfo>"
+    std::string xml = "<message>"
                         "<userId>123</userId>"
                         "<deviceId>123243</deviceId>"
                         "<deviceInfos>"
-                            "<Vector>"
-                                "<ReqDeviceInfo>"
-                                    "<userId>7234</userId>"
-                                    "<deviceId>22334</deviceId>"
-                                "</ReqDeviceInfo>"
-                                "<ReqDeviceInfo>"
-                                    "<userId>7234</userId>"
-                                    "<deviceId>22334</deviceId>"
-                                "</ReqDeviceInfo>"
-                            "</Vector>"
-                        "</deviceInfos>"
-                        "<deviceInfos2>"
-                            "<Vector>"
-                                 "<userId>7234</userId>"
-                                 "<userId>7334</userId>"
-                                 "<userId>42324</userId>"
-                            "</Vector>"
-                        "</deviceInfos2>"
-                        "<deviceInfo>"
-                            "<ReqDeviceInfo>"
+							"<item>"
                                 "<userId>7234</userId>"
                                 "<deviceId>22334</deviceId>"
-                            "</ReqDeviceInfo>"
+							"</item>"
+							"<item>"
+								"<userId>7234</userId>"
+                                "<deviceId>22334</deviceId>"
+							"</item>"
+                        "</deviceInfos>"
+                        "<deviceInfos2>"
+                                 "<item>7234</userId>"
+                                 "<item>7334</item>"
+                                 "<item>42324</item>"
+                        "</deviceInfos2>"
+                        "<deviceInfo>"
+                                "<userId>7234</userId>"
+                                "<deviceId>22334</deviceId>"
                         "</deviceInfo>"
                         "<time>123243</time>"
-                  "</ReqDeviceInfo>";
+                  "</message>";
 
     rapidxml::xml_document<> doc;
     doc.parse<0>((char *)xml.data());
@@ -51,7 +45,8 @@ int main(int argc, char *argv[])
         std::cout << "xml to struct ok" << std::endl;
 
     rapidxml::xml_document<> doc2;
-    rapidxml::xml_node<> *node2 = 0;
+	rapidxml::xml_node<> * node2 = doc2.allocate_node(rapidxml::node_element, "message");
+
     if(serialize(node2, info, doc2))
         std::cout << "struct to xml ok" << std::endl;
     doc2.append_node(node2);

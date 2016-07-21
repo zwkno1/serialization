@@ -3,7 +3,7 @@
 #include <list>
 #include <string>
 
-#include <rapidxml.hpp>
+#include <rapidxml/rapidxml.hpp>
 
 
 namespace test
@@ -48,9 +48,9 @@ int    time;
 
 } // namespace test
 
-bool serialize(rapidxml::xml_node<> * &, const test::ReqDeviceInfo & ,rapidxml::xml_document<> & );
+bool serialize(rapidxml::xml_node<> * , const test::ReqDeviceInfo & ,rapidxml::xml_document<> & );
 bool unserialize(const rapidxml::xml_node<> * , test::ReqDeviceInfo & );
 
-bool serialize(rapidxml::xml_node<> * &, const test::RetDeviceInfo & ,rapidxml::xml_document<> & );
+bool serialize(rapidxml::xml_node<> * , const test::RetDeviceInfo & ,rapidxml::xml_document<> & );
 bool unserialize(const rapidxml::xml_node<> * , test::RetDeviceInfo & );
 

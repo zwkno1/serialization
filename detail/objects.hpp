@@ -6,7 +6,7 @@
 #include <cstring>
 #include <exception>
 
-#include <rapidxml.hpp>
+#include <rapidxml/rapidxml.hpp>
 
 #ifdef SERIALIZATION_NO_TRACE
 #define SERIALIZATION_TRACE(os, str1, str2)
@@ -186,7 +186,7 @@ public:
         items_.push_back(i);
     }
 
-    virtual void genFuncDef(std::ostream & os)
+    virtual void genFuncDef(std::ostream & )
     {
     }
 
