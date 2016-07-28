@@ -6,6 +6,7 @@ project(codegen)
 include_directories(.)
 include_directories(./third_party)
 include_directories(./detail)
+set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 

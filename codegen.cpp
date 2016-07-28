@@ -3,6 +3,12 @@
 
 #include "generator.h"
 
+struct CodeTypeInfo
+{
+    const char *name;
+    serialization::generator::CodeType type;
+};
+
 int main(int argc, char *argv[])
 {
     serialization::generator g;
@@ -13,26 +19,26 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    if(!std::strcmp(argv[1], "-xml"))
+    CodeTypeInfo types[] =
     {
-        for(int i = 2; i < argc; ++i)
+        {"-binary", serialization::generator::BinaryCodeType, },
+        {"-json", serialization::generator::JsonCodeType, },
+        {"-xml", serialization::generator::XmlCodeType, },
+    };
+
+    for(int i = 0; i != sizeof(types)/sizeof(CodeTypeInfo); ++i)
+    {
+        if(strcmp(argv[1], types[i].name) == 0)
         {
-            if(g.gen_xml_code(argv[i]))
-                std::cout << argv[i] << ":  ok..." << std::endl;
+            for(int j = 2; j < argc; ++j)
+            {
+                if(g.gen_code(types[i].type, argv[j]))
+                    std::cout << argv[j] << ":  ok..." << std::endl;
+            }
+            return 0;
         }
-    }
-    else if(!std::strcmp(argv[1], "-json"))
-    {
-        for(int i = 2; i < argc; ++i)
-        {
-            if(g.gen_json_code(argv[i]))
-                std::cout << argv[i] << ":  ok..." << std::endl;
-        }
-    }
-    else
-    {
-        std::cout << "invalid argument" << std::endl;
     }
 
+    std::cout << "invalid argument: " << argv[1] << std::endl;
     return 0;
 }

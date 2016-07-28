@@ -7,8 +7,6 @@
 #include "detail/objects.h"
 #include "detail/parser.h"
 
-#include <rapidxml/rapidxml.hpp>
-
 namespace
 {
 
@@ -135,6 +133,56 @@ const char * json_base_code =
 
         )";
 
+const char * binary_base_code =
+        R"(
+        // for base item
+        // char or uchar is treated as interger"
+        template<typename T>
+        bool serialize(Buffer & buf, const T & in)
+        {
+        buf.append(in);
+        return true;
+        }
+
+        // for sequence
+        template<typename T>
+        bool serialize(Buffer & buf, const std::list<T> & in)
+        {
+        uint64_t size = in.size();
+        buf.append(size);
+        for(auto &i : in)
+        {
+        if(!serialize(buf, i))
+        return false;
+        }
+        return true;
+        }
+
+        // for base item
+        template<typename T>
+        bool unserialize(const Buffer & buf, T & out)
+        {
+        return buf.get(out);
+        }
+
+        // for sequence
+        template<typename T>
+        bool unserialize(const Buffer & buf, std::list<T> & out)
+        {
+        uint32_t size;
+        if(!buf.get(size))
+        return false;
+
+        T tmp;
+        for(uint32_t i = 0; i != size; ++i)
+        {
+        if(!unserialize(buf, tmp))
+        return false;
+        }
+        return true;
+        }
+        )";
+
 bool read_file(const std::string & filename, std::string & data)
 {
     std::ifstream ifs(filename);
@@ -179,9 +227,9 @@ void gen_json_code_impl(serialization::detail::tree & t, const std::string & nam
          "\n";
 
     cpp << "#include \"" << name << ".h"
-           "\"\n\n"
-           "#include <cstring>\n"
-           "\n";
+                                    "\"\n\n"
+                                    "#include <cstring>\n"
+                                    "\n";
 
     if(!t.desc.empty())
         h << "// " << t.desc << "\n";
@@ -348,66 +396,159 @@ void gen_xml_code_impl(serialization::detail::tree & t, const std::string & name
     cpp << os3.rdbuf();
 }
 
+void gen_binary_code_impl(serialization::detail::tree & t, const std::string & name)
+{
+    std::ofstream h(name + ".h");
+    std::ofstream cpp(name + ".cpp");
+
+    //function def code
+    std::stringstream os1;
+    //serialize code
+    std::stringstream os2;
+    //unserialize code
+    std::stringstream os3;
+
+    h << "\n"
+         "#pragma once\n"
+         "#include <list>\n"
+         "#include <string>\n"
+         "#include <cstring>\n"
+         "#include <sstream>\n"
+         "\n"
+         "#include \"buffer.h\"\n"
+         "\n"
+         "\n";
+
+    cpp << "#include \"" << name << ".h\"\n"
+           "\n";
+
+    if(!t.desc.empty())
+        h << "// " << t.desc << "\n";
+
+    if(!t.type.empty())
+        h << "namespace " << t.type << "\n{\n";
+
+    for(serialization::detail::entry * e : t.entries)
+    {
+        h << "// " << e->desc << "\n";
+        h << "struct " << e->type << "\n{\n";
+        if(!e->id.empty())
+            h << "enum { ID = " << e->id << " };\n\n";
+
+        os1 << "template<>\n"
+               "bool serialize(Buffer & , const " << t.type << "::" << e->type << " & );\n"
+            << "template<>\n"
+               "bool unserialize(const Buffer & , " << t.type << "::" << e->type << " & );\n\n";
+
+        os2 << "template<>\n"
+               "bool serialize(Buffer & buf, const " << t.type << "::" << e->type << " & in)\n"
+               "{\n";
+
+        os3 << "template<>\n"
+               "bool unserialize(Buffer & buf, " << t.type << "::" << e->type << " & out)\n"
+               "{\n";
+
+        for(serialization::detail::item * i : e->items)
+        {
+            h << "// " << i->desc << "\n";
+            if(i->item_type == serialization::detail::Sequence)
+                h << "std::list< " << i->type << " >    " << i->name << ";\n\n";
+            else
+                h << i->type << "    " << i->name << ";\n\n";
+
+            os2 << "if(!serialize(buf, in." << i->name << "))\n"
+                   "return false;\n"
+                   "\n";
+
+            os3 << "if(!unserialize(buf, out." << i->name << "))\n"
+                   "return false;\n"
+                   "\n";
+        }
+
+        h << "};\n\n";
+
+        os2 << "return true;\n"
+               "}\n\n";
+
+        os3 << "\nreturn true;\n"
+               "}\n\n";
+    }
+
+    if(!t.type.empty())
+        h << "\n} // namespace " << t.type << "\n";
+    h << "\n\n";
+    h << binary_base_code;
+    h << os1.rdbuf();
+
+    cpp << os2.rdbuf();
+    cpp << os3.rdbuf();
+
+}
+
 } // namespace
 
 namespace serialization
 {
 
-bool generator::gen_json_code(const std::string & file, const std::string & name)
+bool generator::gen_code(CodeType type, const std::string & in, const std::string & out)
 {
     std::string data;
-    if(!read_file(file, data))
+    if(!read_file(in, data))
     {
-        std::cout << "read file error: " << file << std::endl;
+        std::cout << "read file error: " << in << std::endl;
         return false;
     }
+
+    std::string filename = out.empty() ? in : out;
 
     detail::tree t;
     try
     {
         parser p(t);
         p.parse(data);
-        if(name.empty())
-            gen_json_code_impl(t, file);
-        else
-            gen_json_code_impl(t, name);
+        switch(type)
+        {
+        case JsonCodeType:
+        {
+            gen_json_code_impl(t, filename);
+        }
+            break;
+        case XmlCodeType:
+        {
+            gen_xml_code_impl(t, filename);
+        }
+            break;
+        case BinaryCodeType:
+        {
+            gen_binary_code_impl(t, filename);
+        }
+            break;
+        default:
+            return false;
+        }
     }
     catch(const detail::parse_error& err)
     {
-        std::cout << file << ">> " << err.where() << ":" << err.what() << std::endl;
+        std::cout << in << ">> " << err.where() << ":" << err.what() << std::endl;
         return false;
     }
 
     return true;
 }
 
-bool generator::gen_xml_code(const std::string & file, const std::string & name)
+bool generator::gen_json_code(const std::string & in, const std::string & out)
 {
-    std::string data;
-    if(!read_file(file, data))
-    {
-        std::cout << "read file error: " << file << std::endl;
-        return false;
-    }
-
-    detail::tree t;
-    try
-    {
-        parser p(t);
-        p.parse(data);
-        if(name.empty())
-            gen_xml_code_impl(t, file);
-        else
-            gen_xml_code_impl(t, name);
-    }
-    catch(const detail::parse_error& err)
-    {
-        std::cout << file << ">> " << err.where() << ":" << err.what() << std::endl;
-        return false;
-    }
-
-    return true;
+    return gen_code(JsonCodeType, in, out);
 }
 
+bool generator::gen_xml_code(const std::string & in, const std::string & out)
+{
+    return gen_code(XmlCodeType, in, out);
+}
+
+bool generator::gen_binary_code(const std::string & in, const std::string & out)
+{
+    return gen_code(BinaryCodeType, in, out);
+}
 
 } // namespace serialization
