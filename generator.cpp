@@ -136,7 +136,6 @@ const char * json_base_code =
 const char * binary_base_code =
         R"(
         // for base item
-        // char or uchar is treated as interger"
         template<typename T>
         bool serialize(Buffer & buf, const T & in)
         {
@@ -148,7 +147,7 @@ const char * binary_base_code =
         template<typename T>
         bool serialize(Buffer & buf, const std::list<T> & in)
         {
-        uint64_t size = in.size();
+        uint32_t size = in.size();
         buf.append(size);
         for(auto &i : in)
         {
@@ -325,6 +324,7 @@ void gen_xml_code_impl(serialization::detail::tree & t, const std::string & name
     cpp << "#include \"" << name << ".h\"\n"
            "\n";
 
+	h << "#pragma pack(push,1)\n\n";
     if(!t.desc.empty())
         h << "// " << t.desc << "\n";
 
@@ -389,6 +389,7 @@ void gen_xml_code_impl(serialization::detail::tree & t, const std::string & name
     if(!t.type.empty())
         h << "\n} // namespace " << t.type << "\n";
     h << "\n\n";
+	h << "#pragma pack(pop)\n\n";
     h << xml_base_code;
     h << os1.rdbuf();
 
@@ -415,12 +416,14 @@ void gen_binary_code_impl(serialization::detail::tree & t, const std::string & n
          "#include <cstring>\n"
          "#include <sstream>\n"
          "\n"
-         "#include \"buffer.h\"\n"
+		 "#include \"buffer.h\"\n"
          "\n"
          "\n";
 
     cpp << "#include \"" << name << ".h\"\n"
            "\n";
+
+    h << "#pragma pack(push,1)\n\n";
 
     if(!t.desc.empty())
         h << "// " << t.desc << "\n";
@@ -445,7 +448,7 @@ void gen_binary_code_impl(serialization::detail::tree & t, const std::string & n
                "{\n";
 
         os3 << "template<>\n"
-               "bool unserialize(Buffer & buf, " << t.type << "::" << e->type << " & out)\n"
+               "bool unserialize(const Buffer & buf, " << t.type << "::" << e->type << " & out)\n"
                "{\n";
 
         for(serialization::detail::item * i : e->items)
@@ -477,6 +480,7 @@ void gen_binary_code_impl(serialization::detail::tree & t, const std::string & n
     if(!t.type.empty())
         h << "\n} // namespace " << t.type << "\n";
     h << "\n\n";
+    h << "#pragma pack(pop)\n\n";
     h << binary_base_code;
     h << os1.rdbuf();
 
