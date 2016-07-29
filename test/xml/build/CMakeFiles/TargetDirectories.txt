@@ -1,0 +1,3 @@
+/home/zwk/workspace/serialization/test/xml/build/CMakeFiles/edit_cache.dir
+/home/zwk/workspace/serialization/test/xml/build/CMakeFiles/rebuild_cache.dir
+/home/zwk/workspace/serialization/test/xml/build/CMakeFiles/test_xml.dir

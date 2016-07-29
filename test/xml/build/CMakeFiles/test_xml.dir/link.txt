@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/test_xml.dir/test_xml.cpp.o CMakeFiles/test_xml.dir/home/zwk/workspace/serialization/third_party/binary/buffer.cpp.o CMakeFiles/test_xml.dir/test.cpp.o  -o test_xml 

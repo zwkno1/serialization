@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     if(argc < 3)
     {
         std::cout << "invalid argument" << std::endl;
-        return 0;
+        return -1;
     }
 
     CodeTypeInfo types[] =
@@ -40,5 +40,5 @@ int main(int argc, char *argv[])
     }
 
     std::cout << "invalid argument: " << argv[1] << std::endl;
-    return 0;
+    return -1;
 }
