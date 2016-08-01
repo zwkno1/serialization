@@ -324,7 +324,6 @@ void gen_xml_code_impl(serialization::detail::tree & t, const std::string & name
     cpp << "#include \"" << name << ".h\"\n"
            "\n";
 
-	h << "#pragma pack(push,1)\n\n";
     if(!t.desc.empty())
         h << "// " << t.desc << "\n";
 
@@ -389,7 +388,6 @@ void gen_xml_code_impl(serialization::detail::tree & t, const std::string & name
     if(!t.type.empty())
         h << "\n} // namespace " << t.type << "\n";
     h << "\n\n";
-	h << "#pragma pack(pop)\n\n";
     h << xml_base_code;
     h << os1.rdbuf();
 
