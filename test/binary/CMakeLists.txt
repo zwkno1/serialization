@@ -1,6 +1,7 @@
 cmake_minimum_required (VERSION 3.4)
 
 project(test_binary)
+set(CMAKE_BUILD_TYPE Debug)
 
 file(COPY test DESTINATION ${PROJECT_BINARY_DIR})  
 file(COPY ../../build/codegen DESTINATION ${PROJECT_BINARY_DIR})  
