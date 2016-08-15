@@ -21,6 +21,10 @@ int main()
 	in.deviceInfo.userId = 0;
 	in.deviceInfo.deviceId = 2;
 	in.time = 15;
+	in.arr[0] = 10;
+	in.arr[1] = 9;
+
+
 
 	rapidjson::Value v(rapidjson::kObjectType);
 	if(!serialize(v, in, doc))

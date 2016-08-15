@@ -1,3 +1,4 @@
+#pragma once
 
 // parse xml described file
 #define XML_PARSER

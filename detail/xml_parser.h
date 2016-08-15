@@ -1,5 +1,8 @@
+#pragma once
 
 #include "objects.h"
+
+#include <map>
 
 namespace serialization
 {
@@ -91,24 +94,18 @@ private:
         const char * name = parse_attribute(node, "name");
         const char * desc = parse_attribute(node, "desc");
 
-        ItemType item_type;
-        if(!std::strcmp(obj_type, "base"))
+        ItemType item_type = get_item_type_from_string(obj_type);
+        if(item_type == MaxTypes)
         {
-            item_type = Base;
+            SERIALIZATION_PARSE_ERROR("unexpect item type: ", obj_type);
         }
-        else if(!std::strcmp(obj_type, "sequence"))
-        {
-            item_type = Sequence;
-        }
-        else if(!std::strcmp(obj_type, "structure"))
-        {
-            item_type = Structure;
-        }
-        else
-        {
-            SERIALIZATION_PARSE_ERROR("expect item(base or sequence or struct)", type);
-        }
-        return tree_.make_item(item_type, type, name, desc);
+
+        item * i = tree_.make_item(item_type, type, name, desc);
+
+        if(item_type == Array)
+            if(!parse_attribute(node, "size", i->size))
+                SERIALIZATION_PARSE_ERROR("expect item attr(size)", type);
+        return i;
     }
 
     const char * parse_attribute(rapidxml::xml_node<> * node, const char * name)
@@ -118,6 +115,38 @@ private:
             return attr->value();
         return "";
     }
+
+    template<typename T>
+    bool parse_attribute(rapidxml::xml_node<> * node, const char * name, T & val)
+    {
+        auto attr = node->first_attribute(name);
+        if(!attr)
+            return false;
+        std::stringstream ss;
+        ss << attr->value();
+        ss >> val;
+        if(!ss.eof())
+            return false;
+        return true;
+    }
+
+    ItemType get_item_type_from_string(const char * type)
+    {
+        static std::map<std::string, ItemType> type_map =
+        {
+            {"base",    Base},
+            {"array",   Array},
+            {"list",    List},
+            {"vector",  Vector},
+            {"struct",  Struct},
+        };
+
+        auto iter = type_map.find(type);
+        if(iter != type_map.end())
+            return iter->second;
+        return MaxTypes;
+    }
+
 private:
     tree & tree_;
 };

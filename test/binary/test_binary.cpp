@@ -22,6 +22,21 @@ int main(int argc, char *argv[])
 	info.deviceInfo.userId = 8000;
 	info.deviceInfo.userId = 9000;
 	info.time = 1098090;
+	info.arr[0] = 10;
+	info.arr[1] = 9;
+	info.arr[2] = 8;
+	info.arr[3] = 7;
+	info.arr[4] = 6;
+	info.arr[5] = 5;
+	info.arr[6] = 4;
+	info.arr[7] = 3;
+	info.arr[8] = 2;
+	info.arr[9] = 1;
+	info.name_list[0] = "01234567890";
+	info.name_list[1] = "`1234567890-=qwertyuiop[]asdfghjkl;'zxcvbnm,./";
+	info.name_list[2] = "123321";
+	info.name_list[3] = "sjiduhfkaishdfklhjasdfkljhasdfjaskjdhfiqy23rjkejhfoudsfjgkqhwlreiidksgfbliuh";
+
 		
 	Buffer buf;
 	if(!serialize(buf, info))

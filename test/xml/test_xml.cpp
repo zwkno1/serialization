@@ -35,6 +35,18 @@ int main(int argc, char *argv[])
                                 "<deviceId>22334</deviceId>"
                         "</deviceInfo>"
                         "<time>123243</time>"
+						"<arr>"
+							"<item>10</item>"
+							"<item>9</item>"
+							"<item>8</item>"
+							"<item>7</item>"
+							"<item>6</item>"
+							"<item>5</item>"
+							"<item>4</item>"
+							"<item>3</item>"
+							"<item>2</item>"
+							"<item>1</item>"
+						"</arr>"
                   "</message>";
 
     rapidxml::xml_document<> doc;
@@ -43,6 +55,8 @@ int main(int argc, char *argv[])
     test::RetDeviceInfo info;
     if(unserialize(node, info))
         std::cout << "xml to struct ok" << std::endl;
+	else
+        std::cout << "xml to struct failed" << std::endl;
 
     rapidxml::xml_document<> doc2;
 	rapidxml::xml_node<> * node2 = doc2.allocate_node(rapidxml::node_element, "message");

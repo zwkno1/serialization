@@ -4,6 +4,7 @@ project(test_binary)
 
 file(COPY test DESTINATION ${PROJECT_BINARY_DIR})  
 file(COPY ../../build/codegen DESTINATION ${PROJECT_BINARY_DIR})  
+file(COPY ../../code/binary_base.h DESTINATION ${PROJECT_BINARY_DIR})  
 set (GEN_CODE_COMMAND ./codegen -binary test)
 execute_process(
 	COMMAND ${GEN_CODE_COMMAND}

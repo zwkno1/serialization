@@ -2,8 +2,11 @@ cmake_minimum_required (VERSION 3.4)
 
 project(test_xml)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 file(COPY test DESTINATION ${PROJECT_BINARY_DIR})  
 file(COPY ../../build/codegen DESTINATION ${PROJECT_BINARY_DIR})  
+file(COPY ../../code/xml_base.h DESTINATION ${PROJECT_BINARY_DIR})  
 set (GEN_CODE_COMMAND ./codegen -xml test)
 execute_process(
 	COMMAND ${GEN_CODE_COMMAND}

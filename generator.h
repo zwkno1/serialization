@@ -1,6 +1,16 @@
 #pragma once
 
 #include <string>
+#include <map>
+
+namespace serialization
+{
+namespace detail
+{
+class generator;
+}
+}
+//class serialization::detail::generator;
 
 namespace serialization
 {
@@ -8,21 +18,12 @@ namespace serialization
 class generator
 {
 public:
-    enum CodeType
-    {
-        XmlCodeType = 0,
-        JsonCodeType,
-        BinaryCodeType,
-    };
+    generator();
 
-    bool gen_code(CodeType type, const std::string & in, const std::string & out = "");
+    bool gen_code(const std::string & type, const std::string & in, const std::string & out = "");
 
-    bool gen_json_code(const std::string & in, const std::string & out = "");
-
-    bool gen_xml_code(const std::string & in, const std::string & out = "");
-
-    bool gen_binary_code(const std::string & in, const std::string & out = "");
-
+private:
+    std::map<std::string, serialization::detail::generator *> generators_;
 };
 
 } // namespace serialization

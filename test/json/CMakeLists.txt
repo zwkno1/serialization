@@ -4,6 +4,7 @@ project(test_json)
 
 file(COPY test DESTINATION ${PROJECT_BINARY_DIR})  
 file(COPY ../../build/codegen DESTINATION ${PROJECT_BINARY_DIR})  
+file(COPY ../../code/json_base.h DESTINATION ${PROJECT_BINARY_DIR})  
 set (GEN_CODE_COMMAND ./codegen -json test)
 execute_process(
 	COMMAND ${GEN_CODE_COMMAND}

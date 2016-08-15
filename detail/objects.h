@@ -77,8 +77,11 @@ private:
 enum ItemType
 {
     Base,
-    Sequence,
-    Structure,
+    Array,
+    List,
+    Vector,
+    Struct,
+    MaxTypes,
 };
 
 struct item
@@ -89,6 +92,7 @@ public:
         , type(t)
         , name(n)
         , desc(d)
+        , size(0)
     {
     }
 
@@ -97,6 +101,9 @@ public:
     std::string type;
     std::string name;
     std::string desc;
+
+    // array size
+    std::size_t size;
 };
 
 struct entry

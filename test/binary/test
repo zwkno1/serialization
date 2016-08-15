@@ -6,11 +6,13 @@
 </entry>
 <entry type='RetDeviceInfo' desc='fan hui shebei xingxi' id = '2'> 
 <base name='userId' type='int' desc='yong hu id'></item>
+<base name='name' type='std::string' desc='yong hu id'></item>
 <base name='deviceId' type='int' desc='she bei id'></item>
-<base name='name' type='std::string' desc='yong hu ming'></item>
-<sequence name='deviceInfos' type='ReqDeviceInfo'  desc='she bei zhuang tai'></item>
-<sequence  name='deviceInfos2' type='int' desc='she bei zhuang tai'></item>
-<structure name='deviceInfo' type='ReqDeviceInfo' desc='she bei zhuang tai'></item>
+<list name='deviceInfos' type='ReqDeviceInfo'  desc='she bei zhuang tai'></item>
+<list name='deviceInfos2' type='int' desc='she bei zhuang tai'></item>
+<struct name='deviceInfo' type='ReqDeviceInfo' desc='she bei zhuang tai'></item>
 <base name='time' type='int' desc='she bei shi jian'></item>
+<array name='arr' type='int' size='10' desc='int array'></item>
+<array name='name_list' type='std::string' size='4' desc='name list'></item>
 </entry>
 </root>

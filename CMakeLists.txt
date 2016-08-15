@@ -1,4 +1,5 @@
 
+
 cmake_minimum_required (VERSION 3.4)
 
 project(codegen)
@@ -14,8 +15,8 @@ SET(SRC_LIST
 	codegen.cpp
 	generator.cpp
 	)
+aux_source_directory(./detail SRC_LIST)
 
 add_executable(codegen
 	${SRC_LIST}
 	)
-
