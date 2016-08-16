@@ -17,8 +17,9 @@ int main(int argc, char *argv[])
     {
         if(g.gen_code(argv[1], argv[j]))
             std::cout << argv[j] << ":  ok..." << std::endl;
-		else
-		  return -1;
+	else
+	    return -1;
     }
-	return 0;
+    
+    return 0;
 }
