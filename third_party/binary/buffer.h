@@ -16,7 +16,7 @@ public:
 	}
 
 	template<typename T>
-	bool get(T & out)
+	bool get(T & out) const
 	{
 		if(!can_read(sizeof(out)))
 		  return false;
@@ -96,8 +96,8 @@ private:
 };
 
 template<>
-bool get(std::string & out)；
+bool Buffer::get(std::string & out) const;
 
 template<>
-void Buffer::append(const std::string & v)
+void Buffer::append(const std::string & v);
 

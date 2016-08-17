@@ -4,7 +4,7 @@
 #include <stddef.h>
 
 template<>
-bool Buffer::get(std::string & out)
+bool Buffer::get(std::string & out) const
 {
 	uint32_t size = 0;
 	if(!get(size))
