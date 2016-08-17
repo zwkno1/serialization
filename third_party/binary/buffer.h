@@ -15,12 +15,8 @@ public:
 	{
 	}
 
-	bool get(std::string & out ) const;
-
-	void append(const std::string & out );
-
 	template<typename T>
-	bool get(T & out) const
+	bool get(T & out)
 	{
 		if(!can_read(sizeof(out)))
 		  return false;
@@ -98,4 +94,10 @@ private:
 	std::vector<uint8_t> data_;
 	mutable size_t index_;
 };
+
+template<>
+bool get(std::string & out)；
+
+template<>
+void Buffer::append(const std::string & v)
 
