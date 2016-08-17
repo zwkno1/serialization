@@ -3,7 +3,7 @@
 #include <string>
 #include <stddef.h>
 
-//template<>
+template<>
 bool Buffer::get(std::string & out) const
 {
 	uint32_t size = 0;
@@ -16,7 +16,7 @@ bool Buffer::get(std::string & out) const
 	return true;
 }
 
-//template<>
+template<>
 void Buffer::append(const std::string & v)
 {
 	uint32_t size = v.size();
