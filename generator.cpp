@@ -50,6 +50,14 @@ generator::generator()
   };
 }
 
+generator::~generator()
+{
+	for(auto & i : generators_)
+	{
+		delete i.second;
+	}
+}
+
 bool generator::gen_code(const std::string & type, const std::string & in, const std::string & out)
 {
     auto iter = generators_.find(type);

@@ -19,6 +19,7 @@ class generator
 {
 public:
     generator();
+    ~generator();
 
     bool gen_code(const std::string & type, const std::string & in, const std::string & out = "");
 
