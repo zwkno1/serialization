@@ -64,6 +64,7 @@ void json_generator::gen_code(const serialization::detail::tree & t, const std::
          "#pragma once\n"
          "#include <list>\n"
          "#include <vector>\n"
+         "#include <map>\n"
          "#include <string>\n"
          "#include <sstream>\n"
          "\n"
@@ -72,7 +73,7 @@ void json_generator::gen_code(const serialization::detail::tree & t, const std::
          "\n"
          "\n";
 
-    gen_struct_def(t, h);
+    gen_def(t, h);
     h << "#include \"json_base.h\"\n\n";
     h << os1.rdbuf();
 

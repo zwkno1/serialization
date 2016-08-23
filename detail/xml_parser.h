@@ -103,8 +103,15 @@ private:
         item * i = tree_.make_item(item_type, type, name, desc);
 
         if(item_type == Array)
+        {
             if(!parse_attribute(node, "size", i->size))
                 SERIALIZATION_PARSE_ERROR("expect item attr(size)", type);
+        }
+        else if(item_type == Map)
+        {
+            if(!parse_attribute(node, "key", i->key))
+                SERIALIZATION_PARSE_ERROR("expect item attr(key)", type);
+        }
         return i;
     }
 
@@ -138,6 +145,7 @@ private:
             {"array",   Array},
             {"list",    List},
             {"vector",  Vector},
+            {"map",     Map},
             {"struct",  Struct},
         };
 

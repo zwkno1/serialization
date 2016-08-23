@@ -58,6 +58,7 @@ void binary_generator::gen_code(const serialization::detail::tree & t, const std
          "#pragma once\n"
          "#include <list>\n"
          "#include <vector>\n"
+         "#include <map>\n"
          "#include <string>\n"
          "#include <cstring>\n"
          "#include <sstream>\n"
@@ -66,7 +67,7 @@ void binary_generator::gen_code(const serialization::detail::tree & t, const std
          "\n"
          "\n";
     h << "#pragma pack(push,1)\n\n";
-    gen_struct_def(t, h);
+    gen_def(t, h);
     h << "#pragma pack(pop)\n\n";
     h << "#include \"binary_base.h\"\n\n";
     h << os1.rdbuf();

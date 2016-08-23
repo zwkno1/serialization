@@ -80,6 +80,7 @@ enum ItemType
     Array,
     List,
     Vector,
+    Map,
     Struct,
     MaxTypes,
 };
@@ -102,8 +103,11 @@ public:
     std::string name;
     std::string desc;
 
-    // array size
+    // array size (used by Array)
     std::size_t size;
+
+    // key type (used by Map)
+    std::string key;
 };
 
 struct entry

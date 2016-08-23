@@ -23,6 +23,13 @@ int main()
 	in.time = 15;
 	in.arr[0] = 10;
 	in.arr[1] = 9;
+	in.mapxxx[3] = "string3";
+	in.mapxxx[1] = "string1";
+	in.mapxxx[2] = "string2";
+	in.mapxxx[7] = "string7";
+	in.mapxxx[8] = "string8";
+	in.mapxxx[9] = "string9";
+	in.mapxxx[0] = "string0";
 
 
 

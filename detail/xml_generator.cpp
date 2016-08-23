@@ -67,6 +67,7 @@ void xml_generator::gen_code(const serialization::detail::tree & t, const std::s
          "#pragma once\n"
          "#include <list>\n"
          "#include <vector>\n"
+         "#include <map>\n"
          "#include <string>\n"
          "#include <cstring>\n"
          "#include <sstream>\n"
@@ -74,7 +75,7 @@ void xml_generator::gen_code(const serialization::detail::tree & t, const std::s
          "#include <rapidxml/rapidxml.hpp>\n"
          "\n"
          "\n";
-    gen_struct_def(t, h);
+    gen_def(t, h);
     h << "#include \"xml_base.h\"\n\n";
     h << "\n\n";
     h << os1.rdbuf();

@@ -47,6 +47,15 @@ int main(int argc, char *argv[])
 							"<item>2</item>"
 							"<item>1</item>"
 						"</arr>"
+						"<mapxxx>"
+							"<item><first>1</key><second>string1</value></item>"
+							"<item><first>9</key><second>string9</value></item>"
+							"<item><first>5</key><second>string5</value></item>"
+							"<item><first>3</key><second>string3</value></item>"
+							"<item><first>7</key><second>string7</value></item>"
+							"<item><first>8</key><second>string8</value></item>"
+							"<item><first>2</key><second>string2</value></item>"
+						"</mapxxx>"
                   "</message>";
 
     rapidxml::xml_document<> doc;

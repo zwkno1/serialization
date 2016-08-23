@@ -1,16 +1,17 @@
 
 <root type='test' desc='for test'>
 <entry type='ReqDeviceInfo' desc='qing qiu shebei xingxi' id = '1'> 
-<base name='userId' type='int' desc='yong hu id'></item>
-<base name='deviceId' type='int' desc='she bei id'></item>
+<base name='userId' type='int' desc='yong hu id'></base>
+<base name='deviceId' type='int' desc='she bei id'></base>
 </entry>
 <entry type='RetDeviceInfo' desc='fan hui shebei xingxi' id = '2'> 
-<base name='userId' type='int' desc='yong hu id'></item>
-<base name='deviceId' type='int' desc='she bei id'></item>
-<list name='deviceInfos' type='ReqDeviceInfo'  desc='she bei zhuang tai'></item>
-<list name='deviceInfos2' type='int' desc='she bei zhuang tai'></item>
-<struct name='deviceInfo' type='ReqDeviceInfo' desc='she bei zhuang tai'></item>
-<base name='time' type='int' desc='she bei shi jian'></item>
-<array name='arr' type='int' size='10' desc='int array'></item>
+<base name='userId' type='int' desc='yong hu id'></base>
+<base name='deviceId' type='int' desc='she bei id'></base>
+<list name='deviceInfos' type='ReqDeviceInfo'  desc='she bei zhuang tai'></list>
+<list name='deviceInfos2' type='int' desc='she bei zhuang tai'></list>
+<struct name='deviceInfo' type='ReqDeviceInfo' desc='she bei zhuang tai'></struct>
+<base name='time' type='int' desc='she bei shi jian'></base>
+<array name='arr' type='int' size='10' desc='int array'></array>
+<map name='mapxxx' type='std::string' key='int' desc='asdad'></map>
 </entry>
 </root>

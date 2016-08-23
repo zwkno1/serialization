@@ -36,6 +36,13 @@ int main(int argc, char *argv[])
 	info.name_list[1] = "`1234567890-=qwertyuiop[]asdfghjkl;'zxcvbnm,./";
 	info.name_list[2] = "123321";
 	info.name_list[3] = "sjiduhfkaishdfklhjasdfkljhasdfjaskjdhfiqy23rjkejhfoudsfjgkqhwlreiidksgfbliuh";
+	info.mapxxx[3] = "string3";
+	info.mapxxx[1] = "string1";
+	info.mapxxx[2] = "string2";
+	info.mapxxx[7] = "string7";
+	info.mapxxx[8] = "string8";
+	info.mapxxx[9] = "string9";
+	info.mapxxx[0] = "string0";
 
 		
 	Buffer buf;
